@@ -1,0 +1,20 @@
+services:
+  mcl-stratum:
+    build:
+      context: ./dockerfiles
+      dockerfile: Dockerfile
+    container_name: mcl-stratum
+    environment:
+      RPC_USER: mcluser1
+      RPC_PASS: ilovemcl2 
+      WALLET: RDEpzVM4g2ohN2geRyQiVkD5ufqXWEaYN4 # enter your address
+      PUBKEY: "pubkey_here"
+#      RPC_HOST: ${RPC_HOST}
+    ports:
+      - "33824:33824" # p2p port
+      - "8888:8888"  # make same port inside equihash.conf
+    volumes:
+      - ./equihash.conf:/home/mclminer/equihash.conf
+      - ./mcldata:/home/mclminer/.komodo/MCL
+      - ./zcashparams:/home/mclminer/.zcash-params
+    command: ./yiimp-stratum-equihash/stratum equihash
