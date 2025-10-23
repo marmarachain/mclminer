@@ -50,18 +50,26 @@ RUN addgroup --gid ${GROUP_ID} usergroup && \
     chown -R mclminer:usergroup /home/mclminer
 
 
-COPY fetch-params.sh /home/mclminer/fetch-params.sh
+COPY --from=builder /marmarachain/marmara/zcutil/fetch-params.sh /home/mclminer/fetch-params.sh
 
-RUN chown mclminer:usergroup /home/mclminer/fetch-params.sh && \
-    chmod +x /home/mclminer/fetch-params.sh
+RUN chown mclminer:usergroup /home/mclminer/
 
 USER mclminer
 WORKDIR /home/mclminer
+
+ENV DB_CPP="/home/mclminer/yiimp-stratum-equihash/db.cpp"
+
+ARG RPC_USER
+ARG RPC_PASS
+ARG WALLET
 
 # Clone repo and Compile
 RUN git clone https://github.com/marmarachain/yiimp-stratum-equihash.git && \
     cd yiimp-stratum-equihash && \
     git checkout mcl && \
+    sed -i "s|.*// \[4\] rpc.user.*|            \"${RPC_USER}\", // [4] rpc.user|" "$DB_CPP" && \
+    sed -i "s|.*// \[5\] rpc.pass.*|            \"${RPC_PASS}\", // [5] rpc.pass|" "$DB_CPP" && \
+    sed -i "s|.*// \[7\] wallet.*|            \"${WALLET}\", // [7] wallet|" "$DB_CPP" && \
     make -C iniparser/ -j$(nproc) && \
     make -C algos/ -j$(nproc) && \
     make -C sha3 -j$(nproc) && \

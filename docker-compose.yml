@@ -3,13 +3,15 @@ services:
     build:
       context: ./dockerfiles
       dockerfile: Dockerfile
+      args:
+        RPC_USER: ${rpcuser}
+        RPC_PASS: ${rpcpass} 
+        WALLET: ${address}
     container_name: mcl-stratum
     environment:
-      RPC_USER: mcluser1
-      RPC_PASS: ilovemcl2 
-      WALLET: RDEpzVM4g2ohN2geRyQiVkD5ufqXWEaYN4 # enter your address
-      PUBKEY: "pubkey_here"
-#      RPC_HOST: ${RPC_HOST}
+      RPC_USER: ${rpcuser}
+      RPC_PASS: ${rpcpass}
+      PUBKEY: ${pubkey}
     ports:
       - "33824:33824" # p2p port
       - "8888:8888"  # make same port inside equihash.conf
